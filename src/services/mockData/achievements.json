@@ -1,0 +1,32 @@
+[
+  {
+    "Id": 1,
+    "type": "tasks_completed",
+    "earnedAt": "2024-01-13T19:30:00.000Z",
+    "message": "Completed 5 tasks! You're building great momentum! 🎉"
+  },
+  {
+    "Id": 2,
+    "type": "streak",
+    "earnedAt": "2024-01-12T15:22:00.000Z",
+    "message": "3 day streak! Consistency is your superpower! ⭐"
+  },
+  {
+    "Id": 3,
+    "type": "first_task",
+    "earnedAt": "2024-01-08T12:15:00.000Z",
+    "message": "Welcome to Lovable! You completed your first task! 💕"
+  },
+  {
+    "Id": 4,
+    "type": "early_bird",
+    "earnedAt": "2024-01-11T08:30:00.000Z",
+    "message": "Early bird achievement! Starting your day productively! 🌅"
+  },
+  {
+    "Id": 5,
+    "type": "weekend_warrior",
+    "earnedAt": "2024-01-13T19:30:00.000Z",
+    "message": "Weekend warrior! Making progress even on weekends! 💪"
+  }
+]

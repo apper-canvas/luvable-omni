@@ -1,0 +1,68 @@
+[
+  {
+    "Id": 1,
+    "title": "Review quarterly marketing campaigns",
+    "description": "Analyze performance metrics and prepare recommendations for next quarter",
+    "dueDate": "2024-01-15T00:00:00.000Z",
+    "priority": "high",
+    "projectId": 1,
+    "completed": false,
+    "createdAt": "2024-01-10T10:30:00.000Z",
+    "completedAt": null
+  },
+  {
+    "Id": 2,
+    "title": "Update portfolio website",
+    "description": "Add new projects and refresh the design with latest work samples",
+    "dueDate": "2024-01-16T00:00:00.000Z",
+    "priority": "medium",
+    "projectId": 2,
+    "completed": false,
+    "createdAt": "2024-01-12T14:15:00.000Z",
+    "completedAt": null
+  },
+  {
+    "Id": 3,
+    "title": "Plan weekend hiking trip",
+    "description": "Research trails, check weather, and pack hiking gear",
+    "dueDate": "2024-01-15T00:00:00.000Z",
+    "priority": "low",
+    "projectId": 3,
+    "completed": false,
+    "createdAt": "2024-01-13T09:20:00.000Z",
+    "completedAt": null
+  },
+  {
+    "Id": 4,
+    "title": "Prepare presentation slides",
+    "description": "Create comprehensive slides for Monday's client meeting",
+    "dueDate": "2024-01-15T00:00:00.000Z",
+    "priority": "high",
+    "projectId": 1,
+    "completed": false,
+    "createdAt": "2024-01-11T16:45:00.000Z",
+    "completedAt": null
+  },
+  {
+    "Id": 5,
+    "title": "Learn new React patterns",
+    "description": "Study hooks and context API for better state management",
+    "dueDate": "2024-01-17T00:00:00.000Z",
+    "priority": "medium",
+    "projectId": 2,
+    "completed": true,
+    "createdAt": "2024-01-08T11:30:00.000Z",
+    "completedAt": "2024-01-12T15:22:00.000Z"
+  },
+  {
+    "Id": 6,
+    "title": "Grocery shopping for the week",
+    "description": "Buy fresh ingredients for meal prep and healthy snacks",
+    "dueDate": "2024-01-14T00:00:00.000Z",
+    "priority": "medium",
+    "projectId": 3,
+    "completed": true,
+    "createdAt": "2024-01-13T08:00:00.000Z",
+    "completedAt": "2024-01-13T19:30:00.000Z"
+  }
+]
