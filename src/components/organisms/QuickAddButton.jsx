@@ -11,6 +11,8 @@ const QuickAddButton = ({ className = '', onTaskAdded }) => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [templates, setTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -18,19 +20,23 @@ const QuickAddButton = ({ className = '', onTaskAdded }) => {
     priority: 'medium',
     projectId: null
   });
-
-  const openModal = async () => {
+const openModal = async () => {
     setShowModal(true);
     try {
-      const projectList = await projectService.getAll();
+      const [projectList, templateList] = await Promise.all([
+        projectService.getAll(),
+        taskService.getTemplates()
+      ]);
       setProjects(projectList);
+      setTemplates(templateList);
     } catch (error) {
-      console.error('Failed to load projects:', error);
+      console.error('Failed to load projects and templates:', error);
     }
   };
 
-  const closeModal = () => {
+const closeModal = () => {
     setShowModal(false);
+    setSelectedTemplate('');
     setFormData({
       title: '',
       description: '',
@@ -38,6 +44,35 @@ const QuickAddButton = ({ className = '', onTaskAdded }) => {
       priority: 'medium',
       projectId: null
     });
+  };
+
+  const handleTemplateSelect = async (templateId) => {
+    if (!templateId) {
+      setSelectedTemplate('');
+      setFormData({
+        title: '',
+        description: '',
+        dueDate: '',
+        priority: 'medium',
+        projectId: null
+      });
+      return;
+    }
+
+    try {
+      const template = await taskService.getTemplateById(parseInt(templateId, 10));
+      setSelectedTemplate(templateId);
+      setFormData({
+        title: template.title,
+        description: template.description,
+        dueDate: template.dueDate || '',
+        priority: template.priority,
+        projectId: template.projectId
+      });
+    } catch (error) {
+      console.error('Failed to load template:', error);
+      toast.error('Failed to load template');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -91,7 +126,7 @@ const QuickAddButton = ({ className = '', onTaskAdded }) => {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
-              <div className="bg-white rounded-3xl shadow-xl max-w-md w-full p-6">
+<div className="bg-white rounded-3xl shadow-xl max-w-md w-full p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-heading gradient-text">Add New Task</h2>
                   <button
@@ -102,7 +137,27 @@ const QuickAddButton = ({ className = '', onTaskAdded }) => {
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+<form onSubmit={handleSubmit} className="space-y-4">
+                  {templates.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Use Template
+                      </label>
+                      <select
+                        value={selectedTemplate}
+                        onChange={(e) => handleTemplateSelect(e.target.value)}
+                        className="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white hover:border-gray-300 focus:ring-primary/20 focus:border-primary focus:outline-none focus:ring-4"
+                      >
+                        <option value="">Start from scratch</option>
+                        {templates.map((template) => (
+                          <option key={template.Id} value={template.Id}>
+                            {template.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
                   <Input
                     label="Task Title"
                     value={formData.title}
@@ -110,7 +165,6 @@ const QuickAddButton = ({ className = '', onTaskAdded }) => {
                     placeholder="What needs to be done?"
                     required
                   />
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Description

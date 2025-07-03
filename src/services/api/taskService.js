@@ -112,7 +112,98 @@ class TaskService {
     return this.tasks
       .filter(task => task.completed)
       .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))
-      .map(task => ({ ...task }));
+.map(task => ({ ...task }));
+  }
+
+  // Template Management
+  async getTemplates() {
+    await delay(200);
+    const templates = [
+      {
+        Id: 1,
+        name: 'Morning Routine',
+        title: 'Complete Morning Routine',
+        description: 'Wake up, drink water, exercise, meditate, review daily goals',
+        priority: 'high',
+        projectId: null,
+        category: 'daily'
+      },
+      {
+        Id: 2,
+        name: 'Weekly Report',
+        title: 'Prepare Weekly Status Report',
+        description: 'Review completed tasks, identify blockers, plan next week priorities',
+        priority: 'medium',
+        projectId: null,
+        category: 'weekly'
+      },
+      {
+        Id: 3,
+        name: 'Monthly Review',
+        title: 'Monthly Goal Review',
+        description: 'Assess monthly progress, update goals, plan improvements',
+        priority: 'medium',
+        projectId: null,
+        category: 'monthly'
+      },
+      {
+        Id: 4,
+        name: 'Daily Standup',
+        title: 'Daily Team Standup',
+        description: 'Share yesterday progress, today plans, blockers',
+        priority: 'high',
+        projectId: null,
+        category: 'daily'
+      }
+    ];
+    return [...templates];
+  }
+
+  async getTemplateById(id) {
+    await delay(200);
+    const templates = await this.getTemplates();
+    const template = templates.find(t => t.Id === parseInt(id, 10));
+    if (!template) {
+      throw new Error('Template not found');
+    }
+    return { ...template };
+  }
+
+  async createTemplate(templateData) {
+    await delay(300);
+    // In a real app, this would save to a templates collection
+    // For now, we'll just return the template data with an ID
+    const templates = await this.getTemplates();
+    const maxId = Math.max(...templates.map(t => t.Id), 0);
+    const newTemplate = {
+      Id: maxId + 1,
+      name: templateData.name,
+      title: templateData.title,
+      description: templateData.description || '',
+      priority: templateData.priority || 'medium',
+      projectId: templateData.projectId || null,
+      category: templateData.category || 'custom'
+    };
+    return { ...newTemplate };
+  }
+
+  async updateTemplate(id, updates) {
+    await delay(300);
+    // In a real app, this would update the template in storage
+    const template = await this.getTemplateById(id);
+    const { Id, ...allowedUpdates } = updates;
+    const updatedTemplate = {
+      ...template,
+      ...allowedUpdates
+    };
+    return { ...updatedTemplate };
+  }
+
+  async deleteTemplate(id) {
+    await delay(300);
+    // In a real app, this would delete from templates collection
+    const template = await this.getTemplateById(id);
+    return { ...template };
   }
 }
 
