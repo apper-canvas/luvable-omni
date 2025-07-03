@@ -1,123 +1,542 @@
-import mockTasks from '../mockData/tasks.json';
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+import { toast } from 'react-toastify';
 
 class TaskService {
   constructor() {
-    this.tasks = [...mockTasks];
+    // Initialize ApperClient for database operations
+    if (typeof window !== 'undefined' && window.ApperSDK) {
+      const { ApperClient } = window.ApperSDK;
+      this.apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+    }
   }
 
   async getAll() {
-    await delay(300);
-    return [...this.tasks];
+    try {
+      const params = {
+        fields: [
+          { field: { "Name": "Name" } },
+          { field: { "Name": "Tags" } },
+          { field: { "Name": "Owner" } },
+          { field: { "Name": "title" } },
+          { field: { "Name": "description" } },
+          { field: { "Name": "due_date" } },
+          { field: { "Name": "priority" } },
+          { field: { "Name": "project_id" } },
+          { field: { "Name": "completed" } },
+          { field: { "Name": "created_at" } },
+          { field: { "Name": "completed_at" } }
+        ],
+        orderBy: [
+          {
+            fieldName: "created_at",
+            sorttype: "DESC"
+          }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords('task', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      if (!response.data || response.data.length === 0) {
+        return [];
+      }
+
+      // Map database fields to UI format
+      return response.data.map(task => ({
+        Id: task.Id,
+        Name: task.Name || task.title || '',
+        title: task.title || task.Name || '',
+        description: task.description || '',
+        dueDate: task.due_date,
+        priority: task.priority || 'medium',
+        projectId: parseInt(task.project_id) || null,
+        completed: task.completed || false,
+        createdAt: task.created_at,
+        completedAt: task.completed_at
+      }));
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching tasks:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
   async getById(id) {
-    await delay(200);
-    const task = this.tasks.find(t => t.Id === parseInt(id, 10));
-    if (!task) {
-      throw new Error('Task not found');
+    try {
+      const params = {
+        fields: [
+          { field: { "Name": "Name" } },
+          { field: { "Name": "Tags" } },
+          { field: { "Name": "Owner" } },
+          { field: { "Name": "title" } },
+          { field: { "Name": "description" } },
+          { field: { "Name": "due_date" } },
+          { field: { "Name": "priority" } },
+          { field: { "Name": "project_id" } },
+          { field: { "Name": "completed" } },
+          { field: { "Name": "created_at" } },
+          { field: { "Name": "completed_at" } }
+        ]
+      };
+
+      const response = await this.apperClient.getRecordById('task', parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (!response.data) {
+        return null;
+      }
+
+      const task = response.data;
+      return {
+        Id: task.Id,
+        Name: task.Name || task.title || '',
+        title: task.title || task.Name || '',
+        description: task.description || '',
+        dueDate: task.due_date,
+        priority: task.priority || 'medium',
+        projectId: parseInt(task.project_id) || null,
+        completed: task.completed || false,
+        createdAt: task.created_at,
+        completedAt: task.completed_at
+      };
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching task with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
     }
-    return { ...task };
   }
 
   async getTodaysTasks() {
-    await delay(300);
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    
-    return this.tasks
-      .filter(task => {
-        if (!task.dueDate) return false;
-        const taskDate = new Date(task.dueDate).toISOString().split('T')[0];
-        return taskDate === todayStr && !task.completed;
-      })
-      .map(task => ({ ...task }));
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      
+      const params = {
+        fields: [
+          { field: { "Name": "Name" } },
+          { field: { "Name": "Tags" } },
+          { field: { "Name": "Owner" } },
+          { field: { "Name": "title" } },
+          { field: { "Name": "description" } },
+          { field: { "Name": "due_date" } },
+          { field: { "Name": "priority" } },
+          { field: { "Name": "project_id" } },
+          { field: { "Name": "completed" } },
+          { field: { "Name": "created_at" } },
+          { field: { "Name": "completed_at" } }
+        ],
+        where: [
+          {
+            FieldName: "due_date",
+            Operator: "ExactMatch",
+            SubOperator: "Day",
+            Values: [today.split('-').reverse().join(' ')],
+            Include: true
+          }
+        ],
+        orderBy: [
+          {
+            fieldName: "completed",
+            sorttype: "ASC"
+          },
+          {
+            fieldName: "priority",
+            sorttype: "DESC"
+          }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords('task', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      if (!response.data || response.data.length === 0) {
+        return [];
+      }
+
+      return response.data.map(task => ({
+        Id: task.Id,
+        Name: task.Name || task.title || '',
+        title: task.title || task.Name || '',
+        description: task.description || '',
+        dueDate: task.due_date,
+        priority: task.priority || 'medium',
+        projectId: parseInt(task.project_id) || null,
+        completed: task.completed || false,
+        createdAt: task.created_at,
+        completedAt: task.completed_at
+      }));
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching today's tasks:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
   async getByProject(projectId) {
-    await delay(300);
-    return this.tasks
-      .filter(task => task.projectId === projectId)
-      .map(task => ({ ...task }));
+    try {
+      const params = {
+        fields: [
+          { field: { "Name": "Name" } },
+          { field: { "Name": "Tags" } },
+          { field: { "Name": "Owner" } },
+          { field: { "Name": "title" } },
+          { field: { "Name": "description" } },
+          { field: { "Name": "due_date" } },
+          { field: { "Name": "priority" } },
+          { field: { "Name": "project_id" } },
+          { field: { "Name": "completed" } },
+          { field: { "Name": "created_at" } },
+          { field: { "Name": "completed_at" } }
+        ],
+        where: [
+          {
+            FieldName: "project_id",
+            Operator: "EqualTo",
+            Values: [parseInt(projectId)],
+            Include: true
+          }
+        ],
+        orderBy: [
+          {
+            fieldName: "completed",
+            sorttype: "ASC"
+          },
+          {
+            fieldName: "created_at",
+            sorttype: "DESC"
+          }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords('task', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      if (!response.data || response.data.length === 0) {
+        return [];
+      }
+
+      return response.data.map(task => ({
+        Id: task.Id,
+        Name: task.Name || task.title || '',
+        title: task.title || task.Name || '',
+        description: task.description || '',
+        dueDate: task.due_date,
+        priority: task.priority || 'medium',
+        projectId: parseInt(task.project_id) || null,
+        completed: task.completed || false,
+        createdAt: task.created_at,
+        completedAt: task.completed_at
+      }));
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching project tasks:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
   async create(taskData) {
-    await delay(300);
-    const maxId = Math.max(...this.tasks.map(t => t.Id), 0);
-    const newTask = {
-      Id: maxId + 1,
-      title: taskData.title,
-      description: taskData.description || '',
-      dueDate: taskData.dueDate || null,
-      priority: taskData.priority || 'medium',
-      projectId: taskData.projectId || null,
-      completed: false,
-      createdAt: new Date().toISOString(),
-      completedAt: null
-    };
-    
-    this.tasks.push(newTask);
-    return { ...newTask };
+    try {
+      const params = {
+        records: [
+          {
+            Name: taskData.title || taskData.Name || '',
+            title: taskData.title || taskData.Name || '',
+            description: taskData.description || '',
+            due_date: taskData.dueDate || null,
+            priority: taskData.priority || 'medium',
+            project_id: taskData.projectId ? parseInt(taskData.projectId) : null,
+            completed: false,
+            created_at: new Date().toISOString(),
+            completed_at: null
+          }
+        ]
+      };
+
+      const response = await this.apperClient.createRecord('task', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create ${failedRecords.length} tasks:${JSON.stringify(failedRecords)}`);
+          
+          failedRecords.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        if (successfulRecords.length > 0) {
+          const task = successfulRecords[0].data;
+          toast.success('Task created successfully! 🎉');
+          return {
+            Id: task.Id,
+            Name: task.Name || task.title || '',
+            title: task.title || task.Name || '',
+            description: task.description || '',
+            dueDate: task.due_date,
+            priority: task.priority || 'medium',
+            projectId: parseInt(task.project_id) || null,
+            completed: task.completed || false,
+            createdAt: task.created_at,
+            completedAt: task.completed_at
+          };
+        }
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating task:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      toast.error('Failed to create task');
+      return null;
+    }
   }
 
   async update(id, updates) {
-    await delay(300);
-    const index = this.tasks.findIndex(t => t.Id === parseInt(id, 10));
-    if (index === -1) {
-      throw new Error('Task not found');
-    }
+    try {
+      // Prepare updateable fields only
+      const updateData = {};
+      if (updates.title !== undefined || updates.Name !== undefined) {
+        updateData.Name = updates.title || updates.Name;
+        updateData.title = updates.title || updates.Name;
+      }
+      if (updates.description !== undefined) updateData.description = updates.description;
+      if (updates.dueDate !== undefined) updateData.due_date = updates.dueDate;
+      if (updates.priority !== undefined) updateData.priority = updates.priority;
+      if (updates.projectId !== undefined) updateData.project_id = updates.projectId ? parseInt(updates.projectId) : null;
+      if (updates.completed !== undefined) {
+        updateData.completed = updates.completed;
+        if (updates.completed) {
+          updateData.completed_at = new Date().toISOString();
+        } else {
+          updateData.completed_at = null;
+        }
+      }
 
-    // Prevent Id modification
-    const { Id, ...allowedUpdates } = updates;
-    
-    this.tasks[index] = {
-      ...this.tasks[index],
-      ...allowedUpdates
-    };
-    
-    return { ...this.tasks[index] };
+      const params = {
+        records: [
+          {
+            Id: parseInt(id),
+            ...updateData
+          }
+        ]
+      };
+
+      const response = await this.apperClient.updateRecord('task', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update ${failedUpdates.length} tasks:${JSON.stringify(failedUpdates)}`);
+          
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        if (successfulUpdates.length > 0) {
+          const task = successfulUpdates[0].data;
+          toast.success('Task updated successfully! ✅');
+          return {
+            Id: task.Id,
+            Name: task.Name || task.title || '',
+            title: task.title || task.Name || '',
+            description: task.description || '',
+            dueDate: task.due_date,
+            priority: task.priority || 'medium',
+            projectId: parseInt(task.project_id) || null,
+            completed: task.completed || false,
+            createdAt: task.created_at,
+            completedAt: task.completed_at
+          };
+        }
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating task:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      toast.error('Failed to update task');
+      return null;
+    }
   }
 
   async complete(id) {
-    await delay(300);
-    const index = this.tasks.findIndex(t => t.Id === parseInt(id, 10));
-    if (index === -1) {
-      throw new Error('Task not found');
-    }
-
-    this.tasks[index] = {
-      ...this.tasks[index],
-      completed: true,
-      completedAt: new Date().toISOString()
-    };
-    
-    return { ...this.tasks[index] };
+    return this.update(id, { completed: true });
   }
 
   async delete(id) {
-    await delay(300);
-    const index = this.tasks.findIndex(t => t.Id === parseInt(id, 10));
-    if (index === -1) {
-      throw new Error('Task not found');
-    }
+    try {
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
 
-    const deletedTask = { ...this.tasks[index] };
-    this.tasks.splice(index, 1);
-    return deletedTask;
+      const response = await this.apperClient.deleteRecord('task', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return false;
+      }
+
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+        
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete ${failedDeletions.length} tasks:${JSON.stringify(failedDeletions)}`);
+          
+          failedDeletions.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        if (successfulDeletions.length > 0) {
+          toast.success('Task deleted successfully! 🗑️');
+          return true;
+        }
+      }
+
+      return false;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting task:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      toast.error('Failed to delete task');
+      return false;
+    }
   }
 
   async getCompletedTasks() {
-    await delay(300);
-    return this.tasks
-      .filter(task => task.completed)
-      .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))
-.map(task => ({ ...task }));
+    try {
+      const params = {
+        fields: [
+          { field: { "Name": "Name" } },
+          { field: { "Name": "Tags" } },
+          { field: { "Name": "Owner" } },
+          { field: { "Name": "title" } },
+          { field: { "Name": "description" } },
+          { field: { "Name": "due_date" } },
+          { field: { "Name": "priority" } },
+          { field: { "Name": "project_id" } },
+          { field: { "Name": "completed" } },
+          { field: { "Name": "created_at" } },
+          { field: { "Name": "completed_at" } }
+        ],
+        where: [
+          {
+            FieldName: "completed",
+            Operator: "EqualTo",
+            Values: [true],
+            Include: true
+          }
+        ],
+        orderBy: [
+          {
+            fieldName: "completed_at",
+            sorttype: "DESC"
+          }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords('task', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      if (!response.data || response.data.length === 0) {
+        return [];
+      }
+
+      return response.data.map(task => ({
+        Id: task.Id,
+        Name: task.Name || task.title || '',
+        title: task.title || task.Name || '',
+        description: task.description || '',
+        dueDate: task.due_date,
+        priority: task.priority || 'medium',
+        projectId: parseInt(task.project_id) || null,
+        completed: task.completed || false,
+        createdAt: task.created_at,
+        completedAt: task.completed_at
+      }));
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching completed tasks:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
-  // Template Management
+  // Template Management (kept as static data for now)
   async getTemplates() {
-    await delay(200);
     const templates = [
       {
         Id: 1,
@@ -160,7 +579,6 @@ class TaskService {
   }
 
   async getTemplateById(id) {
-    await delay(200);
     const templates = await this.getTemplates();
     const template = templates.find(t => t.Id === parseInt(id, 10));
     if (!template) {
@@ -170,9 +588,6 @@ class TaskService {
   }
 
   async createTemplate(templateData) {
-    await delay(300);
-    // In a real app, this would save to a templates collection
-    // For now, we'll just return the template data with an ID
     const templates = await this.getTemplates();
     const maxId = Math.max(...templates.map(t => t.Id), 0);
     const newTemplate = {
@@ -188,8 +603,6 @@ class TaskService {
   }
 
   async updateTemplate(id, updates) {
-    await delay(300);
-    // In a real app, this would update the template in storage
     const template = await this.getTemplateById(id);
     const { Id, ...allowedUpdates } = updates;
     const updatedTemplate = {
@@ -200,11 +613,11 @@ class TaskService {
   }
 
   async deleteTemplate(id) {
-    await delay(300);
-    // In a real app, this would delete from templates collection
     const template = await this.getTemplateById(id);
     return { ...template };
   }
 }
+
+export default new TaskService();
 
 export default new TaskService();

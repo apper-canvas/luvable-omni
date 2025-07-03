@@ -280,7 +280,7 @@ const Archive = () => {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
-                          <Badge variant="primary" size="sm">{achievement.type.replace('_', ' ')}</Badge>
+<Badge variant="primary" size="sm">{achievement.type?.replace('_', ' ') || ''}</Badge>
                           <span className="text-sm text-gray-500">
                             {format(new Date(achievement.earnedAt), 'MMM d, yyyy h:mm a')}
                           </span>
@@ -332,7 +332,7 @@ const Archive = () => {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: (groupIndex * 0.1) + (index * 0.05) }}
                         >
-                          <TaskCard
+<TaskCard
                             task={task}
                             project={getProjectById(task.projectId)}
                             onUpdate={handleTaskUpdate}

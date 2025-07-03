@@ -164,8 +164,8 @@ const Insights = () => {
     insights.push({
       type: 'positive',
       icon: 'Star',
-      title: 'Project Champion!',
-      description: `${bestProject.name} is your top performer with ${bestProject.completionRate}% completion rate.`
+title: 'Project Champion!',
+      description: `${bestProject.Name || bestProject.name} is your top performer with ${bestProject.completionRate}% completion rate.`
     });
   }
 
@@ -382,8 +382,8 @@ const Insights = () => {
                       <ApperIcon name={project.icon} size={18} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-gray-900 truncate">{project.name}</h4>
+<div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-gray-900 truncate">{project.Name || project.name}</h4>
                         <div className="flex items-center space-x-2">
                           <span className="text-sm text-gray-600">
                             {project.completedCount}/{project.taskCount}

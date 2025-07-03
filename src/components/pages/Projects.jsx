@@ -139,7 +139,7 @@ const Projects = () => {
   }
 
   // Project Detail View
-  if (selectedProject) {
+if (selectedProject) {
     const completedTasks = projectTasks.filter(task => task.completed);
     const incompleteTasks = projectTasks.filter(task => !task.completed);
     const progress = projectTasks.length > 0 ? (completedTasks.length / projectTasks.length) * 100 : 0;
@@ -171,8 +171,8 @@ const Projects = () => {
                 <ApperIcon name={selectedProject.icon} size={28} />
               </div>
               <div>
-                <h1 className="text-3xl font-heading text-gray-900 mb-2">
-                  {selectedProject.name}
+<h1 className="text-3xl font-heading text-gray-900 mb-2">
+                  {selectedProject.Name || selectedProject.name}
                 </h1>
                 <p className="text-gray-600">
                   {completedTasks.length} of {projectTasks.length} tasks completed

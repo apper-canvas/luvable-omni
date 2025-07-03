@@ -92,9 +92,9 @@ const Today = () => {
         </div>
       </div>
     );
-  }
-
-  if (error) {
+const getProjectById = (projectId) => {
+    return projects.find(p => p.Id === projectId);
+  };
     return (
       <div className="p-6">
         <div className="max-w-4xl mx-auto">
@@ -212,7 +212,7 @@ const Today = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <TaskCard
+<TaskCard
                       task={task}
                       project={getProjectById(task.projectId)}
                       onUpdate={handleTaskUpdate}
@@ -236,7 +236,7 @@ const Today = () => {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <TaskCard
+<TaskCard
                             task={task}
                             project={getProjectById(task.projectId)}
                             onUpdate={handleTaskUpdate}

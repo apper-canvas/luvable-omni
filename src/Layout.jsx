@@ -1,9 +1,26 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ApperIcon from '@/components/ApperIcon';
 import { routeArray } from '@/config/routes';
 import QuickAddButton from '@/components/organisms/QuickAddButton';
+import Button from '@/components/atoms/Button';
+import { AuthContext } from './App';
+
+const LogoutButton = () => {
+  const { logout } = useContext(AuthContext);
+
+  return (
+    <Button
+      variant="ghost"
+      icon="LogOut"
+      onClick={logout}
+      className="w-full justify-start text-gray-600 hover:text-red-500 hover:bg-red-50"
+    >
+      Logout
+    </Button>
+  );
+};
 
 const Layout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,7 +30,6 @@ const Layout = () => {
     hidden: { x: -280 },
     visible: { x: 0 }
   };
-
   const overlayVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 }
@@ -74,11 +90,12 @@ const Layout = () => {
                 </NavLink>
               ))}
             </div>
-          </nav>
+</nav>
 
           {/* Quick Add Desktop */}
-          <div className="flex-shrink-0 p-6 border-t border-pink-100">
+          <div className="flex-shrink-0 p-6 border-t border-pink-100 space-y-3">
             <QuickAddButton className="w-full" />
+            <LogoutButton />
           </div>
         </aside>
 
