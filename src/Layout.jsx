@@ -30,11 +30,10 @@ const Layout = () => {
           <ApperIcon name="Menu" size={24} className="text-gray-600" />
         </button>
         
-        <div className="flex items-center space-x-2">
+<div className="flex items-center space-x-2">
           <ApperIcon name="Heart" size={20} className="text-primary" />
-          <span className="font-heading text-lg gradient-text">Lovable</span>
+          <span className="font-heading text-lg gradient-text">Luvable</span>
         </div>
-        
         <QuickAddButton />
       </header>
 
@@ -45,9 +44,9 @@ const Layout = () => {
           <div className="flex-shrink-0 p-6 border-b border-pink-100">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-2xl flex items-center justify-center">
-                <ApperIcon name="Heart" size={20} className="text-white" />
+<ApperIcon name="Heart" size={20} className="text-white" />
               </div>
-              <span className="font-heading text-2xl gradient-text">Lovable</span>
+              <span className="font-heading text-2xl gradient-text">Luvable</span>
             </div>
           </div>
 
@@ -108,9 +107,9 @@ const Layout = () => {
                 <div className="flex items-center justify-between p-6 border-b border-pink-100">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-2xl flex items-center justify-center">
-                      <ApperIcon name="Heart" size={20} className="text-white" />
+<ApperIcon name="Heart" size={20} className="text-white" />
                     </div>
-                    <span className="font-heading text-2xl gradient-text">Lovable</span>
+                    <span className="font-heading text-2xl gradient-text">Luvable</span>
                   </div>
                   <button
                     onClick={() => setMobileMenuOpen(false)}
