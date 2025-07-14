@@ -617,7 +617,4 @@ class TaskService {
     return { ...template };
   }
 }
-
-export default new TaskService();
-
 export default new TaskService();

@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { format } from 'date-fns';
-import { toast } from 'react-toastify';
-import TaskCard from '@/components/molecules/TaskCard';
-import EmptyState from '@/components/molecules/EmptyState';
-import SkeletonLoader from '@/components/molecules/SkeletonLoader';
-import ErrorState from '@/components/molecules/ErrorState';
-import QuickAddButton from '@/components/organisms/QuickAddButton';
-import ApperIcon from '@/components/ApperIcon';
-import taskService from '@/services/api/taskService';
-import projectService from '@/services/api/projectService';
-import achievementService from '@/services/api/achievementService';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
+import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
+import QuickAddButton from "@/components/organisms/QuickAddButton";
+import EmptyState from "@/components/molecules/EmptyState";
+import ErrorState from "@/components/molecules/ErrorState";
+import TaskCard from "@/components/molecules/TaskCard";
+import SkeletonLoader from "@/components/molecules/SkeletonLoader";
+import projectService from "@/services/api/projectService";
+import taskService from "@/services/api/taskService";
+import achievementService from "@/services/api/achievementService";
 
 const Today = () => {
   const [tasks, setTasks] = useState([]);
@@ -65,7 +65,7 @@ const Today = () => {
     }
   };
 
-  const getProjectById = (projectId) => {
+const getProjectById = (projectId) => {
     return projects.find(p => p.Id === projectId);
   };
 
@@ -92,9 +92,8 @@ const Today = () => {
         </div>
       </div>
     );
-const getProjectById = (projectId) => {
-    return projects.find(p => p.Id === projectId);
-  };
+  }
+  if (error) {
     return (
       <div className="p-6">
         <div className="max-w-4xl mx-auto">
